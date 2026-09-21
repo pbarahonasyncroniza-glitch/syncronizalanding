@@ -1,3 +1,164 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* Las mismas familias que la app: Archivo para títulos, IBM Plex Sans para texto. */
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply font-ui text-ink bg-white;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* El nav es fijo y mide 4rem: sin esto los anclajes quedan tapados. */
+  section[id] {
+    scroll-margin-top: 5rem;
+  }
+
+  ::selection {
+    @apply bg-brand text-white;
+  }
+}
+
+/* ===========================================================================
+   Motion — las clases que consume src/motion.jsx
+   Solo se animan opacity, transform y filter: las tres que el navegador
+   compone en GPU sin recalcular layout. Nada de `transition: all`.
+   =========================================================================== */
+@layer components {
+  /* --- <Reveal> ---------------------------------------------------------- */
+  /* Sin `will-change`: hay ~50 de estos en la página y promover 50 capas de
+     composición a la vez cuesta más de lo que ahorra. El navegador ya promueve
+     solo durante la transición, que es exactamente cuando hace falta. */
+  .silk-reveal {
+    opacity: 0;
+    transform: translate3d(var(--reveal-x, 0), var(--reveal-y, 20px), 0);
+    transition:
+      opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .silk-reveal.is-in {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  /* El blur solo lo pagan los bloques que lo piden (mockups y videos). */
+  .silk-reveal-blur {
+    filter: blur(10px);
+    transition:
+      opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      filter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .silk-reveal-blur.is-in {
+    filter: blur(0);
+  }
+
+  /* --- <RevealText> ------------------------------------------------------ */
+  /* La palabra sube "desde abajo de la línea": el contenedor recorta, el
+     interior traslada. Sin el overflow se vería aparecer, no entrar. */
+  .silk-word {
+    display: inline-block;
+    overflow: hidden;
+    /* El descendente de la g/j/p se recorta si la caja es exacta. */
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
+    vertical-align: bottom;
+  }
+
+  .silk-word-inner {
+    display: inline-block;
+    transform: translateY(110%);
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .silk-word-inner.is-in {
+    transform: translateY(0);
+  }
+
+  /* --- Micro-interacción de botón: relleno que entra desde la izquierda --- */
+  .silk-fill {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .silk-fill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: currentColor;
+    opacity: 0.12;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .silk-fill:hover::before,
+  .silk-fill:focus-visible::before {
+    transform: scaleX(1);
+  }
+
+  /* --- Elevación de tarjeta --------------------------------------------- */
+  .silk-lift {
+    transition:
+      transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      border-color 0.4s ease;
+  }
+
+  .silk-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  /* --- Anillo del Health Score ------------------------------------------ */
+  /* El dasharray lo escribe React; acá solo se suaviza el salto inicial. */
+  .silk-ring {
+    transition: stroke-dashoffset 0.1s linear;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Kill-switch de accesibilidad.
+   motion.jsx ya no monta nada cuando el sistema pide menos movimiento, pero
+   esto cubre el hover y el instante entre el primer render y la hidratación:
+   si algo se escapa, se ve quieto, no roto.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .silk-reveal,
+  .silk-reveal.is-in,
+  .silk-reveal-blur,
+  .silk-reveal-blur.is-in {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+
+  .silk-word-inner,
+  .silk-word-inner.is-in {
+    transform: none;
+    transition: none;
+  }
+
+  .silk-fill::before,
+  .silk-lift,
+  .silk-ring {
+    transition: none;
+  }
+
+  .silk-lift:hover {
+    transform: none;
+  }
+}
