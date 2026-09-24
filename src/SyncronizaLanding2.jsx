@@ -242,25 +242,8 @@ export default function SyncronizaLanding() {
               <Reveal as="div" y={0} x={-16} className="text-xs font-medium text-ink-muted tracking-widest">
                 EN OBRA HOY
               </Reveal>
-              {/* Los dos logos vienen de los avatares de LinkedIn, que llegan en
-                  200x200 y con fondos opuestos: Inspira es blanco sobre gris
-                  oscuro e Ingevec color sobre blanco. Puestos crudos uno al lado
-                  del otro se ven como dos recortes pegados, no como una franja.
-
-                  Van los dos monocromos en ink-3, que es el tratamiento normal de
-                  una franja de clientes y además evita que el azul de Ingevec
-                  (#006FB7) compita con el azul de marca de Syncroniza. El alfa
-                  sale del contraste contra el fondo del avatar, así que el
-                  antialiasing del original se conserva y el borde no queda
-                  dentado.
-
-                  Las alturas (42 y 46) NO son iguales a propósito: Ingevec es una
-                  tipografía gruesa con bajada, Inspira es fina y sin bajada. A la
-                  misma altura de caja, Ingevec se come la franja. Estos dos
-                  números los dejan pesando igual a la vista. */}
-              {/* gap-x-8 en móvil y no 12: los dos logos miden 146 + 152 = 298px
-                  y a 390 de viewport quedan 342 útiles. Con 48px de separación
-                  se pasan por 4px y se apilan; con 32 entran en una línea. */}
+              {/* El logo viene del avatar de LinkedIn, que llega en 200x200 con
+                  fondo blanco sobre gris oscuro. */}
               <div className="flex flex-wrap items-center gap-x-8 sm:gap-x-12 gap-y-6 mt-6">
                 <Reveal delay={80} y={14}>
                   <img
@@ -269,15 +252,6 @@ export default function SyncronizaLanding() {
                     width={438}
                     height={126}
                     className="h-[42px] w-auto opacity-70 hover:opacity-100 transition-opacity duration-300"
-                  />
-                </Reveal>
-                <Reveal delay={170} y={14}>
-                  <img
-                    src="/logo-ingevec.png"
-                    alt="Ingevec"
-                    width={457}
-                    height={138}
-                    className="h-[46px] w-auto opacity-70 hover:opacity-100 transition-opacity duration-300"
                   />
                 </Reveal>
               </div>
