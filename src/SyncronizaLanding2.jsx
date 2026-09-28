@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react';
 import {
   MessageCircle, Box, Calendar, Truck, Smartphone,
   Check, ArrowRight, Menu, X, Gauge, AlertTriangle,
-  ChevronRight, Sparkles
 } from 'lucide-react';
 import { Reveal, RevealText, Counter } from './motion';
-import { useParallax, useRingProgress } from './motion-hooks';
+import { useParallax, useRingProgress, useInView, usePrefersReducedMotion } from './motion-hooks';
 
 export default function SyncronizaLanding() {
   const [navOpen, setNavOpen] = useState(false);
@@ -243,25 +242,8 @@ export default function SyncronizaLanding() {
               <Reveal as="div" y={0} x={-16} className="text-xs font-medium text-ink-muted tracking-widest">
                 EN OBRA HOY
               </Reveal>
-              {/* Los dos logos vienen de los avatares de LinkedIn, que llegan en
-                  200x200 y con fondos opuestos: Inspira es blanco sobre gris
-                  oscuro e Ingevec color sobre blanco. Puestos crudos uno al lado
-                  del otro se ven como dos recortes pegados, no como una franja.
-
-                  Van los dos monocromos en ink-3, que es el tratamiento normal de
-                  una franja de clientes y además evita que el azul de Ingevec
-                  (#006FB7) compita con el azul de marca de Syncroniza. El alfa
-                  sale del contraste contra el fondo del avatar, así que el
-                  antialiasing del original se conserva y el borde no queda
-                  dentado.
-
-                  Las alturas (42 y 46) NO son iguales a propósito: Ingevec es una
-                  tipografía gruesa con bajada, Inspira es fina y sin bajada. A la
-                  misma altura de caja, Ingevec se come la franja. Estos dos
-                  números los dejan pesando igual a la vista. */}
-              {/* gap-x-8 en móvil y no 12: los dos logos miden 146 + 152 = 298px
-                  y a 390 de viewport quedan 342 útiles. Con 48px de separación
-                  se pasan por 4px y se apilan; con 32 entran en una línea. */}
+              {/* El logo viene del avatar de LinkedIn, que llega en 200x200 con
+                  fondo blanco sobre gris oscuro. */}
               <div className="flex flex-wrap items-center gap-x-8 sm:gap-x-12 gap-y-6 mt-6">
                 <Reveal delay={80} y={14}>
                   <img
@@ -270,15 +252,6 @@ export default function SyncronizaLanding() {
                     width={438}
                     height={126}
                     className="h-[42px] w-auto opacity-70 hover:opacity-100 transition-opacity duration-300"
-                  />
-                </Reveal>
-                <Reveal delay={170} y={14}>
-                  <img
-                    src="/logo-ingevec.png"
-                    alt="Ingevec"
-                    width={457}
-                    height={138}
-                    className="h-[46px] w-auto opacity-70 hover:opacity-100 transition-opacity duration-300"
                   />
                 </Reveal>
               </div>
@@ -308,51 +281,141 @@ export default function SyncronizaLanding() {
               { n: 1, label: 'sola base de datos: lo que se carga una vez no se vuelve a tipear' },
             ]}
           />
-     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-16">
-      {[
-        { icon: MessageCircle, n: '01', name: 'Canal WhatsApp', tag: 'Entrada',       desc: 'Capataces reportan por el canal que ya usan. IA estructura fotos, audios y guías.', link: 'whatsapp' },
-        { icon: Box,           n: '02', name: 'Syncroniza 4D', tag: 'BIM + Gantt',   desc: 'Modelo IFC sincronizado con la programación. Recorrido temporal del proyecto.',  link: 'bim4d' },
-        { icon: Calendar,      n: '03', name: 'Last Planner',  tag: 'Semanal',       desc: 'Plan semanal, look-ahead, asistencia y reporte automático con QR de proyecto.', link: 'bim4d' },
-        { icon: Truck,         n: '04', name: 'Guías Hormigón', tag: 'Real vs plan', desc: 'Cada guía trazada a partida y ciclo. Curva S y desvío en tiempo real.',         link: 'hormigon' },
-        { icon: Smartphone,    n: '05', name: 'App Móvil',     tag: 'Salud de obra', desc: 'Health Score, SPI/CPI/PPC y pronóstico EAC en el bolsillo de la gerencia.',     link: 'salud' },
-              ].map((m, i) => (
-                <Reveal key={i} delay={i * 80} y={28}>
-                  <button
-                    onClick={() => scrollTo(m.link)}
-                    className="group w-full h-full bg-surface2 hover:bg-white hover:border-brand-border hover:shadow-xl hover:-translate-y-1.5 border border-slate-200 rounded-md p-6 transition-[transform,box-shadow,background-color,border-color] duration-300 ease-out relative overflow-hidden text-left cursor-pointer"
-                  >
-                    {/* La barra queda siempre visible: son los tres azules del
-                        isotipo y es lo que identifica la tarjeta. El hover la
-                        engrosa, no la estrena. */}
-                    <div className="absolute top-0 left-0 right-0 h-1 group-hover:h-1.5 bg-gradient-to-r from-iso-navy via-iso-mid to-iso-sky transition-all duration-300 ease-out" />
-                    <div className="text-xs font-bold text-brand tracking-widest mb-4">{m.n}</div>
-                    <div className="w-14 h-14 bg-nav-bg rounded-full flex items-center justify-center mb-5 mx-auto group-hover:scale-110 group-hover:shadow-glow transition-all duration-300 ease-out">
-                      <m.icon size={26} className="text-iso-sky" strokeWidth={2} />
-                    </div>
-                    <h3 className="font-display font-bold text-base text-ink mb-1 text-center">{m.name}</h3>
-                    <div className="text-xs uppercase tracking-widest text-brand text-center mb-3">{m.tag}</div>
-                    <div className="h-px w-8 group-hover:w-16 bg-brand-border mx-auto mb-3 transition-all duration-500 ease-out" />
-                    <p className="text-xs text-ink-3 leading-relaxed text-center mb-4">{m.desc}</p>
-
-                    {/* Indicador de click */}
-                    <div className="flex items-center justify-center gap-1 text-xs font-medium text-ink-faint group-hover:text-brand transition-colors duration-300">
-                      <span>Ver más</span>
-                      <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform duration-300" />
-                    </div>
-                  </button>
-                </Reveal>
-              ))}
-           </div>   
-
-          <Reveal delay={420} className="mt-10 bg-nav-bg text-white rounded-md p-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
-            <Sparkles size={20} className="text-iso-sky flex-shrink-0" />
-            <div>
-              <div className="text-xs font-bold tracking-widest text-iso-sky mb-1">UNA SOLA BASE DE DATOS</div>
-              <div className="text-nav-text text-sm leading-relaxed">
-                Lo que el capataz reporta en WhatsApp se ve al instante en el 4D y en el Health Score de gerencia.
-              </div>
+          {/* Los dos rótulos son el argumento de la sección dicho en cuatro
+              palabras, y de paso le ponen nombre a cada mitad de la grilla.
+              Solo en lg: más abajo la grilla se apila y "la izquierda" y "la
+              derecha" dejan de significar nada. */}
+          <div className="hidden lg:grid grid-cols-12 gap-5 mt-16 mb-4">
+            <div className="col-span-4 flex items-center gap-3">
+              <span className="text-[11px] font-bold tracking-[0.2em] text-ink-faint">ENTRA UNA VEZ</span>
+              <span className="h-px flex-1 bg-slate-200" />
             </div>
-          </Reveal>
+            <div className="col-span-8 flex items-center gap-3">
+              <ArrowRight size={14} className="text-brand flex-shrink-0" />
+              <span className="text-[11px] font-bold tracking-[0.2em] text-brand">SE USA EN LOS CUATRO</span>
+              <span className="h-px flex-1 bg-brand-border" />
+            </div>
+          </div>
+
+          {/* La grilla dejó de ser cinco columnas iguales.
+
+              Cinco tarjetas idénticas dicen "cinco productos sueltos", que es
+              justo lo contrario del título. Lo que pasa de verdad es que el
+              dato entra UNA sola vez, por WhatsApp, y de ahí lo consumen los
+              otros cuatro módulos: eso es lo que dibuja ahora la grilla — una
+              tarjeta de entrada, alta y oscura, y cuatro de consumo en 2×2.
+
+              De paso arregla el apriete. Antes cada tarjeta medía 227px de
+              caja, o sea 179px útiles para una descripción centrada que caía
+              en tres líneas de text-xs. Con col-span-4 son 387 de caja y 339
+              de contenido — casi el doble, y alcanza para alinear a la
+              izquierda, que se escanea más rápido que una columna centrada.
+
+              La entrada entra desde la izquierda y las cuatro de consumo
+              desde la derecha, escalonadas: el ojo recorre el camino del dato
+              mientras la sección aparece.
+
+              Los 20px de desplazamiento no son un redondeo estético: el
+              contenedor tiene px-6, o sea 24. Con 28 la tarjeta se asomaba 4px
+              fuera del viewport mientras estaba en reposo y aparecía una barra
+              de scroll horizontal en móvil (medido: scrollWidth 709 contra
+              clientWidth 705). Cualquier x tiene que quedar bajo el padding. */}
+          <div className="grid gap-4 lg:gap-5 sm:grid-cols-2 lg:grid-cols-12 lg:grid-rows-2">
+            {/* --- ENTRADA ----------------------------------------------- */}
+            <Reveal x={-20} y={16} className="sm:col-span-2 lg:col-span-4 lg:row-span-2">
+              <button
+                onClick={() => scrollTo('whatsapp')}
+                className="silk-lift group relative overflow-hidden w-full h-full text-left flex flex-col bg-nav-bg hover:bg-nav-elev border border-nav-border2 hover:border-iso-sky/40 rounded-md p-7 cursor-pointer"
+              >
+                {/* El filo se DIBUJA al pasar el mouse en vez de estar siempre
+                    puesto. Con cinco barras idénticas encendidas todo el rato
+                    el degradado era ruido decorativo; dibujándose es el mismo
+                    gesto que ya hacen las tarjetas de la sección 06, y la
+                    página termina hablando un solo idioma. */}
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-iso-navy via-iso-mid to-iso-sky origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out" />
+
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold tracking-widest text-iso-sky">01</span>
+                  <span className="text-[10px] font-bold tracking-[0.18em] uppercase text-nav-faint">Entrada</span>
+                </div>
+
+                <div className="w-12 h-12 mt-6 rounded-md bg-white/[0.07] border border-nav-border2 flex items-center justify-center group-hover:bg-iso-sky group-hover:border-iso-sky transition-colors duration-300">
+                  <MessageCircle size={24} strokeWidth={2} className="text-iso-sky group-hover:text-nav-bg transition-colors duration-300" />
+                </div>
+
+                <h3 className="font-display font-bold text-xl text-white mt-5">Canal WhatsApp</h3>
+                <p className="text-sm text-nav-text leading-relaxed mt-2">
+                  Capataces reportan por el canal que ya usan. La IA estructura
+                  fotos, audios y guías, sin instalar nada en terreno.
+                </p>
+
+                {/* Los cuatro chips son los mismos cuatro datos que detalla la
+                    sección 02. No hay nada nuevo acá: es el índice de lo que
+                    viene más abajo. */}
+                <div className="flex flex-wrap gap-2 mt-6">
+                  {['Fotos', 'Audios', 'Guías', 'Contexto'].map((t, i) => (
+                    <span
+                      key={t}
+                      className="text-[11px] text-nav-hi bg-white/[0.06] border border-nav-border2 rounded px-2.5 py-1 group-hover:border-iso-sky/40 transition-colors duration-300"
+                      style={{ transitionDelay: `${i * 60}ms` }}
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+
+                {/* mt-auto pega el pie abajo del todo: la tarjeta mide dos
+                    filas y sin esto el enlace queda flotando a media altura. */}
+                <div className="mt-auto pt-7 flex items-center gap-1.5 text-sm font-medium text-iso-sky">
+                  <span>Ver el canal</span>
+                  <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform duration-300" />
+                </div>
+              </button>
+            </Reveal>
+
+            {/* --- CONSUMO ----------------------------------------------- */}
+            {[
+              { icon: Box,        n: '02', name: 'Syncroniza 4D',  tag: 'BIM + Gantt',   desc: 'Modelo IFC sincronizado con la programación. Recorrido temporal del proyecto.', link: 'bim4d',    cta: 'Ver el 4D' },
+              { icon: Calendar,   n: '03', name: 'Last Planner',   tag: 'Semanal',       desc: 'Plan semanal, look-ahead, asistencia y reporte automático con QR de proyecto.', link: 'bim4d',    cta: 'Ver la planificación' },
+              { icon: Truck,      n: '04', name: 'Guías Hormigón', tag: 'Real vs plan',  desc: 'Cada guía trazada a partida y ciclo. Curva S y desvío en tiempo real.',         link: 'hormigon', cta: 'Ver el control' },
+              { icon: Smartphone, n: '05', name: 'App Móvil',      tag: 'Salud de obra', desc: 'Health Score, SPI/CPI/PPC y pronóstico EAC en el bolsillo de la gerencia.',    link: 'salud',    cta: 'Ver la app' },
+            ].map((m, i) => (
+              <Reveal key={m.n} delay={140 + i * 90} x={20} y={16} className="lg:col-span-4">
+                <button
+                  onClick={() => scrollTo(m.link)}
+                  className="silk-lift group relative overflow-hidden w-full h-full text-left flex flex-col bg-surface2 hover:bg-white hover:shadow-lg border border-slate-200 hover:border-brand-border rounded-md p-6 cursor-pointer"
+                >
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-iso-navy via-iso-mid to-iso-sky origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out" />
+
+                  {/* El icono va a la izquierda y no centrado arriba: en una
+                      tarjeta apaisada el bloque nombre+tag necesita el ancho, y
+                      el cuadrado que se rellena es el mismo gesto que los ticks
+                      de la sección 02. */}
+                  <div className="flex items-start gap-4">
+                    <div className="w-11 h-11 rounded-md bg-brand-soft border border-brand-border flex items-center justify-center flex-shrink-0 group-hover:bg-brand group-hover:border-brand transition-colors duration-300">
+                      <m.icon size={20} strokeWidth={2} className="text-brand-ink group-hover:text-white transition-colors duration-300" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-baseline gap-2.5">
+                        <span className="text-xs font-bold tracking-widest text-brand">{m.n}</span>
+                        <h3 className="font-display font-bold text-base text-ink">{m.name}</h3>
+                      </div>
+                      <div className="text-[10px] uppercase tracking-[0.18em] text-ink-faint mt-1">{m.tag}</div>
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-ink-3 leading-relaxed mt-4">{m.desc}</p>
+
+                  {/* El enlace dice a dónde lleva en vez de "Ver más". Cinco
+                      "Ver más" idénticos no le dicen nada a nadie. */}
+                  <div className="mt-auto pt-5 flex items-center gap-1.5 text-sm font-medium text-ink-faint group-hover:text-brand transition-colors duration-300">
+                    <span>{m.cta}</span>
+                    <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform duration-300" />
+                  </div>
+                </button>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -471,7 +534,11 @@ export default function SyncronizaLanding() {
               (51 de 86 frames medidos), y en las de foto a pantalla completa esas
               mismas filas son la guía de despacho. Se tapa con drawbox y `enable`,
               no se recorta. */}
-          <div className="mt-16 grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          {/* items-start y no items-center: con los pasos centrados contra un
+              teléfono de 473px quedaban ~130px de aire arriba y abajo, y la
+              columna de texto parecía flotar. Ahora los dos bloques arrancan
+              en la misma línea. */}
+          <div className="mt-16 grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
             <Reveal className="lg:col-span-5" y={32} blur>
               <PhoneFrame chromeIOS={false}>
                 {/* width/height + aspect-[] no sobran por estar ya en el archivo:
@@ -495,45 +562,47 @@ export default function SyncronizaLanding() {
               </PhoneFrame>
             </Reveal>
 
-            <div className="lg:col-span-7 space-y-8">
-              {[
-                { num: '01', title: 'Captura', desc: 'El capataz envía la foto de la guía por WhatsApp. Sin app, sin formularios.' },
-                { num: '02', title: 'Procesa', desc: 'El agente IA lee proveedor, m³, hora, elemento y ciclo en segundos.' },
-                { num: '03', title: 'Controla', desc: 'La guía queda trazada en el dashboard, con alerta si hay desvío.' },
-              ].map((s, i) => (
-                <Reveal key={i} delay={i * 110} x={16} className="group flex gap-5">
-                  <div className="font-display text-3xl font-bold text-brand flex-shrink-0 group-hover:scale-110 transition-transform duration-300 ease-out">
-                    {s.num}
-                  </div>
-                  <div>
-                    <h3 className="font-display font-bold text-ink mb-1">{s.title}</h3>
-                    <p className="text-sm text-ink-3 leading-relaxed">{s.desc}</p>
-                  </div>
-                </Reveal>
-              ))}
+            {/* Dos de las tres cifras que antes vivían en una franja al pie
+                bajaron acá, pegadas al paso que las produce. Sueltas eran tres
+                números compitiendo entre sí; al lado de su paso son la prueba
+                de ese paso. Captura no lleva cifra a propósito: no hay ninguna
+                medida, e inventarle una sería peor que dejar el hueco. */}
+            <div className="lg:col-span-7">
+              <PasosHormigon
+                pasos={[
+                  { num: '01', title: 'Captura',  desc: 'El capataz envía la foto de la guía por WhatsApp. Sin app, sin formularios.' },
+                  { num: '02', title: 'Procesa',  desc: 'El agente IA lee proveedor, m³, hora, elemento y ciclo en segundos.', dato: 'Menos de 30 s por guía' },
+                  { num: '03', title: 'Controla', desc: 'La guía queda trazada en el dashboard, con alerta si hay desvío.',   dato: '100 % trazadas a partida y ciclo' },
+                ]}
+              />
             </div>
           </div>
 
-          {/* KPIs — la cifra sube desde cero al entrar en pantalla.
-              Un número escrito no se lee; un número que sube, sí. */}
-          <div className="grid sm:grid-cols-3 gap-4 mt-10">
-            {[
-              { v: 100, pre: '',  suf: '%', l: 'de guías trazadas a partida y ciclo', c: 'text-white' },
-              { v: 12,  pre: '−', suf: '%', l: 'promedio en sobrecostos de hormigón', c: 'text-emerald-400' },
-              { v: 30,  pre: '<', suf: 's', l: 'para procesar y validar cada guía',   c: 'text-iso-sky' },
-            ].map((k, i) => (
-              <Reveal key={i} delay={i * 110} className="silk-lift bg-nav-bg hover:bg-nav-elev rounded-md p-6 flex items-center gap-5">
-                <Counter
-                  value={k.v}
-                  prefix={k.pre}
-                  suffix={k.suf}
-                  duration={1400 + i * 150}
-                  className={`font-display text-4xl font-bold tabular-nums ${k.c}`}
-                />
-                <div className="text-sm text-nav-text leading-snug">{k.l}</div>
-              </Reveal>
-            ))}
-          </div>
+          {/* La franja de tres KPI se quedó en uno solo, y grande.
+              Las otras dos cifras subieron a su paso; la que queda es la que
+              cierra el titular de la sección ("Cero sobrecostos en hormigón"),
+              así que gana el tamaño que antes se repartían entre tres. */}
+          <Reveal
+            delay={140}
+            className="silk-lift group mt-12 lg:mt-16 bg-nav-bg hover:bg-nav-elev border border-nav-border2 hover:border-emerald-500/40 rounded-md p-8 lg:p-10 flex flex-col sm:flex-row sm:items-center gap-6 lg:gap-10"
+          >
+            <Counter
+              value={12}
+              prefix="−"
+              suffix="%"
+              duration={1600}
+              className="font-display text-6xl lg:text-7xl font-bold tabular-nums text-emerald-400 leading-none flex-shrink-0"
+            />
+            <div className="sm:border-l sm:border-nav-border2 sm:pl-8 lg:pl-10">
+              <div className="font-display text-lg font-bold text-white">
+                promedio en sobrecostos de hormigón
+              </div>
+              <div className="text-nav-text text-sm leading-relaxed mt-1.5">
+                Detectando sobrestadía, devoluciones y diferencias entre lo
+                despachado y lo colocado, guía por guía.
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -552,37 +621,66 @@ export default function SyncronizaLanding() {
 
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 mt-16 items-start">
             <div className="lg:col-span-8">
+              {/* La pregunta pasa a ser el titular y la sigla baja a rótulo.
+                  "Plazo" en grande no le dice nada a nadie: la gerencia no
+                  entra a la app a mirar el plazo, entra a saber si van en
+                  tiempo. La definición del índice queda abajo, para el que
+                  quiera saber de dónde sale el número. */}
               <div className="grid sm:grid-cols-2 gap-4">
                 {[
-                  { letter: 'SPI', title: 'Plazo',         desc: '¿Vamos en tiempo? Schedule Performance Index calculado a diario por valor ganado.' },
-                  { letter: 'CPI', title: 'Costo',         desc: '¿Cada peso rinde? Cost Performance Index con la data real de avance y horas.' },
-                  { letter: 'IPI', title: 'Productividad', desc: '¿Cuánto producimos por día? m³, m² o unidades reales vs lo planificado.' },
-                  { letter: 'PPC', title: 'Compromisos',   desc: '¿Se cumple lo prometido? Porcentaje de Plan Cumplido del Last Planner semanal.' },
+                  { letter: 'SPI', dim: 'Plazo',         q: '¿Vamos en tiempo?',        desc: 'Schedule Performance Index calculado a diario por valor ganado.' },
+                  { letter: 'CPI', dim: 'Costo',         q: '¿Cada peso rinde?',        desc: 'Cost Performance Index con la data real de avance y horas.' },
+                  { letter: 'IPI', dim: 'Productividad', q: '¿Cuánto producimos al día?', desc: 'm³, m² o unidades reales contra lo planificado.' },
+                  { letter: 'PPC', dim: 'Compromisos',   q: '¿Se cumple lo prometido?', desc: 'Porcentaje de Plan Cumplido del Last Planner semanal.' },
                 ].map((d, i) => (
                   <Reveal
-                    key={i}
+                    key={d.letter}
                     delay={i * 90}
-                    className="silk-lift group bg-surface2 hover:bg-white hover:shadow-lg border border-slate-200 rounded-md p-6 border-l-4 border-l-brand hover:border-l-iso-sky"
+                    y={16}
+                    className="silk-lift group relative overflow-hidden bg-surface2 hover:bg-white hover:shadow-lg border border-slate-200 hover:border-brand-border rounded-md p-6"
                   >
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="inline-block bg-nav-bg text-white text-xs font-bold tracking-wider px-3 py-1.5 rounded group-hover:bg-brand transition-colors duration-300">
+                    {/* El borde izquierdo fijo se cambia por el filo que se
+                        dibuja al pasar el mouse: es el mismo gesto de la suite
+                        y de la sección 06, y encima se ve — un cambio de color
+                        en 4px de borde lateral no lo nota nadie. */}
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-iso-navy via-iso-mid to-iso-sky origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out" />
+
+                    <div className="flex items-center gap-2.5">
+                      <span className="inline-block bg-nav-bg text-white text-[11px] font-bold tracking-wider px-2 py-0.5 rounded group-hover:bg-brand transition-colors duration-300">
                         {d.letter}
                       </span>
-                      <h3 className="font-display text-lg font-bold text-ink">{d.title}</h3>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
+                        {d.dim}
+                      </span>
                     </div>
-                    <p className="text-sm text-ink-3 leading-relaxed">{d.desc}</p>
+
+                    <h3 className="font-display text-lg font-bold text-ink leading-snug mt-3">{d.q}</h3>
+                    <p className="text-sm text-ink-3 leading-relaxed mt-1.5">{d.desc}</p>
                   </Reveal>
                 ))}
               </div>
 
-              <Reveal delay={380} className="mt-6 bg-nav-bg rounded-md p-5 flex items-center gap-4">
-                <Gauge size={22} className="text-iso-sky flex-shrink-0" />
-                <div>
-                  <div className="text-xs font-bold tracking-widest text-iso-sky mb-1">
-                    HEALTH SCORE · 0–100
+              {/* El Health Score es el argumento de la sección, y hasta acá era
+                  una franja de texto chico. Ahora el número se ve desde lejos y
+                  sube contando, igual que el anillo del teléfono de al lado:
+                  las dos piezas animan el mismo 86 y se leen como una sola. */}
+              <Reveal delay={380} y={16} className="silk-lift group mt-4 bg-nav-bg hover:bg-nav-elev border border-nav-border2 hover:border-iso-sky/40 rounded-md p-6 lg:p-7 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7">
+                <div className="flex items-baseline gap-1 flex-shrink-0">
+                  <Counter
+                    value={86}
+                    duration={1600}
+                    className="font-display text-5xl lg:text-6xl font-bold tabular-nums text-white leading-none"
+                  />
+                  <span className="font-display text-xl font-bold text-nav-faint">/100</span>
+                </div>
+                <div className="sm:border-l sm:border-nav-border2 sm:pl-7">
+                  <div className="flex items-center gap-2 text-xs font-bold tracking-widest text-iso-sky mb-1.5">
+                    <Gauge size={15} className="flex-shrink-0" />
+                    HEALTH SCORE
                   </div>
-                  <div className="text-sm text-nav-text">
-                    Las cuatro dimensiones se ponderan en una sola métrica de salud.
+                  <div className="text-sm text-nav-text leading-relaxed">
+                    Las cuatro dimensiones ponderadas en un solo número. Es el
+                    mismo que muestra la pantalla de al lado.
                   </div>
                 </div>
               </Reveal>
@@ -904,6 +1002,74 @@ function SectionHeader({ eyebrow, title, description, datos }) {
           </Reveal>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Los tres pasos del hormigón, dibujados como lo que son: una secuencia.
+//
+// Antes eran tres bloques de texto de 51px de alto flotando al lado de un
+// teléfono de 473. Los tres pesaban igual, no había nada que dijera que uno va
+// después del otro, y el hover era escalar el número — un gesto que promete
+// algo que no pasa, porque no es clickeable. Un flujo dibujado como tres
+// párrafos sueltos no se lee como flujo.
+//
+// El riel se dibuja de arriba hacia abajo cuando la sección entra, y cada nodo
+// se enciende cuando el riel ya pasó por él. Es un scaleY sobre una línea de
+// 1px: la misma idea que un DrawSVG, sin sumar la librería.
+// ---------------------------------------------------------------------------
+function PasosHormigon({ pasos }) {
+  const reducido = usePrefersReducedMotion();
+  const [ref, enPantalla] = useInView({ threshold: 0.25 });
+  const activo = reducido || enPantalla;
+
+  // El riel tarda esto en recorrerse entero; los nodos se reparten ese tramo
+  // para que cada uno prenda justo cuando la línea le llega.
+  const dibujo = 1100;
+  const paso = pasos.length > 1 ? dibujo / (pasos.length - 1) : 0;
+
+  return (
+    <div ref={ref} className="relative">
+      {/* top-5/bottom-5 = el centro del primer y del último nodo (h-10 → 20px).
+          Si el riel arranca en el borde del contenedor asoma por encima del 01
+          y se lee como una línea cortada, no como una que los une. */}
+      <div
+        className="absolute left-5 top-5 bottom-5 w-px bg-brand-border origin-top"
+        style={{
+          transform: `scaleY(${activo ? 1 : 0})`,
+          transition: reducido ? 'none' : `transform ${dibujo}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`,
+        }}
+      />
+
+      <ol className="relative space-y-8">
+        {pasos.map((s, i) => (
+          <li key={s.num} className="relative pl-16">
+            <span
+              className={`absolute left-0 top-0 w-10 h-10 rounded-full border-2 flex items-center justify-center font-display text-sm font-bold tabular-nums ${
+                activo
+                  ? 'bg-brand border-brand text-white'
+                  : 'bg-white border-brand-border text-brand'
+              }`}
+              style={{
+                transition: reducido ? 'none' : 'background-color 400ms ease-out, border-color 400ms ease-out, color 400ms ease-out',
+                transitionDelay: reducido ? '0ms' : `${Math.round(i * paso)}ms`,
+              }}
+            >
+              {s.num}
+            </span>
+
+            <h3 className="font-display text-lg font-bold text-ink">{s.title}</h3>
+            <p className="text-ink-3 leading-relaxed mt-1.5">{s.desc}</p>
+
+            {s.dato && (
+              <span className="inline-block mt-3 text-xs font-medium text-brand-ink bg-brand-soft border border-brand-border rounded px-2.5 py-1">
+                {s.dato}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }
